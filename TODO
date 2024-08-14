@@ -1,0 +1,40 @@
+
+Plan A
+
+1. take cog.yaml from AudioSR
+2. add installation steps for audioldm-training-finetuning setup
+3. remove packages that are only needed for cog deployment 
+4. build image from it
+
+
+Plan B
+
+1. take cog.yaml from AudioSR and build image from it
+2. export dockerfile of that image via cog debug
+3. add installation steps for audioldm-training-finetuning setup
+4. build another image from it
+
+5. add steps for downloading datasets and checkpoints from google drive
+
+7. Try to train a smaller model 
+8. Make it work on windows
+
+
+
+aux:
+
+acquire compute resources from afeka, requirements:
+-persistent 300 Gb storage
+-GPU GeForce RTX 3090 with 24Gb vram
+-ubuntu
+-docker
+-full access to internet
+-ssh access preferably not with VMware horizon
+
+
+done: 
+disable docker service that runs as root
+5. create docker run script for starting the container
+6. in the script, map the dataset, checkpoints and ~/.cache folders to volumes outside of container
+
+
