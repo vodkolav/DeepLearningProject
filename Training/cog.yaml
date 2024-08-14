@@ -40,7 +40,8 @@ build:
 
 
   # run bash commands:
-  # run:
+   run:
+    - echo "export PYTHONPATH=~/AudioLDM-training-finetuning:$PYTHONPATH" >> ~/.bashrc
   #   - curl -sSL https://install.python-poetry.org | python3 -
   #   - export PATH="/root/.local/bin:$PATH" && poetry config virtualenvs.create false   
   #   - git clone https://github.com/haoheliu/AudioLDM-training-finetuning.git
