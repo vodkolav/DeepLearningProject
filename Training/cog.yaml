@@ -40,8 +40,8 @@ build:
 
 
   # run bash commands:
-   run:
-    - echo "export PYTHONPATH=/src/AudioLDM-training-finetuning" >> ~/.bashrc
+  # run:
+  #  - echo "export PYTHONPATH=/src/AudioLDM-training-finetuning" >> ~/.bashrc
   #   - curl -sSL https://install.python-poetry.org | python3 -
   #   - export PATH="/root/.local/bin:$PATH" && poetry config virtualenvs.create false   
   #   - git clone https://github.com/haoheliu/AudioLDM-training-finetuning.git
@@ -52,4 +52,4 @@ build:
 # predict.py defines how predictions are run on your model
 predict: "predict.py:DummyPredictor"
 
-image: "afeka_dl.2"
+image: "afeka_dl.3"
