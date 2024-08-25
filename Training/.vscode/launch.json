@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // For debugging inside a container. 
+            // Go to Docker -> container -> attach Visual Studio Code
+            // and use this debug configuration. 
+            "name": "Python Debugger: finetune",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/AudioLDM-training-finetuning/audioldm_train/train/latent_diffusion.py",
+            "cwd": "${workspaceFolder}/AudioLDM-training-finetuning",
+            "console": "internalConsole",
+            "args": [                
+                "-c", "audioldm_train/config/2024_08_21_AudioSR/AudioSR.yaml",
+                "--reload_from_ckpt", "data/checkpoints/haoheliu_audiosr_basic.ckpt"
+            ]
+        }
+    ]
+}
