@@ -2,7 +2,7 @@
 host_AudioLDM=~/DLproj/AudioLDM-training-finetuning
 host_cache=~/DLproj/cache
 
-docker run -it -p 5001:5000 --gpus all \
+docker run -p 5001:5000 --gpus all \
  --env="DISPLAY=172.28.128.1:0" \
  --env="QT_X11_NO_MITSHM=1" \
  --env="HF_HOME=/root/.cache/huggingface" \
@@ -11,4 +11,4 @@ docker run -it -p 5001:5000 --gpus all \
  --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
  --volume="$host_AudioLDM:/src/AudioLDM-training-finetuning" \
  --volume="$host_cache:/root/.cache" \
- --net=host --shm-size=8g --memory="16g" afeka_dl.2 && detach
+ --net=host --shm-size=8g --memory="30g" afeka_dl.2 
