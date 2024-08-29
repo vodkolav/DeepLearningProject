@@ -14,6 +14,7 @@ in order to predict in the end the waveform without the single tone noise.
 We would train the model with the pair of original waveform and damaged waveform, and we hope
 that the model will be able to predict the missing sounds in time.
 
+4. Comapre between results of model pre-finetuning and after fine tuning to prove improvement of the training. It could be made by comparing between MSE between original- pre-trained and original- post-training
 
 
 DATASET:
@@ -22,7 +23,6 @@ Only (5?) seconds from each sound track will be taken as an input.
 
 
 Evaluation of results:
-
 
 See this site for ideas on metrics for audio evaluation:
  https://medium.com/@poudelnipriyanka/audio-metrics-their-importance-and-their-necessity-417950b0d848
@@ -44,6 +44,7 @@ Ed is the energy of the distortion or noise in the degraded signal.
 
 3. Spectral Distortion: This measures the difference between the spectral envelopes of two signals. It’s often calculated as the mean squared error between the LPC coefficients of the two signals
 
+4.  LSD- (in the article)
 
 ___________________________________________________________________________________________________
 Plan A

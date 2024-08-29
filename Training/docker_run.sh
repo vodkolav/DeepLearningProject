@@ -1,6 +1,6 @@
 
-host_AudioLDM=/media/michael/Data/Studies/Afeka/DLproj/AudioLDM-training-finetuning
-host_cache=/media/michael/Data/Studies/Afeka/DLproj/cache
+host_AudioLDM=~/tensor_project/AudioLDM-training-finetuning
+host_cache=~/tensor_project/cache
 
 docker run -it -p 5001:5000 --gpus all \
  --env="DISPLAY=172.28.128.1:0" \
