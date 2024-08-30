@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import platform
 import random
-
+import os
 def generate_metadata_entries(audio_files, metadata_files_dir, json_file_name):
     metadata_entries = []
     for audio_file in audio_files:
@@ -23,13 +23,33 @@ def generate_metadata_entries(audio_files, metadata_files_dir, json_file_name):
     print(f"Metadata for {json_file_name} created successfully in {metadata_files_dir / json_file_name}")
 
 
-def generate_metadata(audio_dir: Path, metadata_files_dir: Path, json_file_name: str, train_or_test: str):
+def modify_paths(paths, dataset_name):
+    modified_paths = []
+    for path in paths:
+        # Normalize path to handle different path separators
+        normalized_path = os.path.normpath(path)
+
+        # Find the position to start slicing the path
+        dataset_index = normalized_path.find(dataset_name)
+
+        # Check if the dataset name is found in the path
+        if dataset_index != -1:
+            # Extract the part of the path starting from the dataset name
+            new_path = normalized_path[dataset_index:]
+            modified_paths.append(new_path)
+        else:
+            print(f"Dataset name '{dataset_name}' not found in path: {path}")
+
+    return modified_paths
+
+
+def generate_metadata(dataset_name:str, audio_dir: Path, metadata_files_dir: Path, json_file_name: str, train_or_test: str):
     # Use Pathlib for cross-platform compatibility
     audio_extensions = ('.wav', '.stem', '.mp4', '.mp3')
 
     # List all audio files in the directory
     audio_files_in_dir = [f for f in audio_dir.iterdir() if f.suffix in audio_extensions]
-
+    audio_files_in_dir = modify_paths(audio_files_in_dir, dataset_name)
     # Shuffle the list to ensure randomness
     random.shuffle(audio_files_in_dir)
 
@@ -114,8 +134,8 @@ def generate_metadata_for_ldm_wrapper(audio_train_dir, audio_test_dir, name_of_d
     testset_subset_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate metadata files
-    generate_metadata(audio_train_dir, metadata_json_files_dir, f'{name_of_dataset}_train_label.json', "train_val")
-    generate_metadata(audio_test_dir, metadata_json_files_dir, f'{name_of_dataset}_test_label.json', "test")
+    generate_metadata(name_of_dataset, audio_train_dir, metadata_json_files_dir, f'{name_of_dataset}_train_label.json', "train_val")
+    generate_metadata(name_of_dataset, audio_test_dir, metadata_json_files_dir, f'{name_of_dataset}_test_label.json', "test")
 
     # Adjust paths using Pathlib for cross-platform compatibility
     train_json_path = Path(metadata_json_files_dir / f'{name_of_dataset}_train_label.json')
@@ -124,6 +144,7 @@ def generate_metadata_for_ldm_wrapper(audio_train_dir, audio_test_dir, name_of_d
     class_label_path = Path(name_of_dataset_dir / 'class_labels_indices.csv')
     output_path = Path(metadata_dir / 'dataset_root.json')
 
+    alL_audio_dataset_dir = base_dir / alL_audio_dataset_dir
     # Generate the root metadata
     generate_root_metadata(alL_audio_dataset_dir,name_of_dataset, train_json_path,validation_json_path, test_json_path, class_label_path, output_path)
 
