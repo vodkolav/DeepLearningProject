@@ -67,7 +67,13 @@ Plan B
 7. Try to train a smaller model 
 8. Make it work on windows
 
+9. check out other forks of AudioSR
 
+10. try distortion of audio instead of resolution reduction 
+
+11. try inpainting of missing time frames in audio
+
+12. understand how to prepare dataset 
 
 aux:
 
