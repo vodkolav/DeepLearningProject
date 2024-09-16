@@ -35,28 +35,53 @@ Another significant contribution to the field is presented by Huajian Fang in "V
 
 A key aspect of this approach is the use of Kullback-Leibler (KL) divergence to align the latent representations of noisy audio with those of clean audio. By minimizing the divergence between these latent spaces, the model effectively reduces the influence of noise, resulting in enhanced speech quality. This noise-aware encoding technique demonstrates a robust method for improving audio clarity by refining the latent space representations. The concept of aligning noisy and clean latent spaces shares similarities with our exploration of conditional learning in AudioSR, underscoring the relevance of advanced VAE techniques for effective audio enhancement.
 
-### 3. PROBLEM FORMULATION ANMETHOD
-Given an analog signal that has been discretely sampled at a rate of l samples per second, resulting in a low-resolution sequence of values. The goal of audio super resolution (SR) is to estimate a higher resolution signal sampled at a rate of h samples per second, where h > l and T is the total duration in seconds. According to Nyquist’s theory, the low resolution signal have maximum frequency
-bandwidths of l/2 Hz and the high resolution signal have h/2 Hz. Therefore, the
-information contained between frequencies of h/2 − l/2 Hz is missing from the low resolution signal. Estimating the “missing” frequency data is the core objective of the SR task.
+### 3. PROBLEM FORMULATION AND METHOD
+Given an analog signal that has been discretely sampled at a rate of l samples per second, resulting in a low-resolution sequence of values. The goal of audio super resolution (SR) is to estimate a higher resolution signal sampled at a rate of h samples per second, where h > l. According to Nyquist’s theory, the low resolution signal have maximum frequency
+bandwidths of l/2 Hz and the high resolution signal have h/2 Hz. Therefore, the information contained between frequencies of h/2 − l/2 Hz is missing from the low resolution signal. Estimating the “missing” frequency data is the core objective of the SR task.
+
+As outlined in the introduction, the entire AUDIOSR model builds upon the author's previous work, AUDIOLDM. The architecture of AUDIOLDM consists of several key components. First, the high-resolution audio is converted into a Mel spectrogram, which is then encoded using a Variational Autoencoder (VAE) to generate a latent space representation. Simultaneously, the audio is encoded using the CLAP model to produce a one-dimensional vector. Additionally, any conditional text is also encoded using CLAP to create its own one-dimensional vector representation.
+
+Each encoded component—both the audio and the conditional text—is then passed through the latent diffusion model, where sampling occurs. Importantly, each part of the architecture is trained separately in a sequential manner. Once processed, the data is passed through the VAE decoder to reconstruct the Mel spectrogram. Finally, this spectrogram is fed into a neural vocoder, which converts the Mel spectrogram back into an audible audio signal.
 
 
+<!-- Figure of original AUDIOLDM -->
+<figure>
+  <img alt="Fig1: " src="images_final_article/audioldm_architecture_original.png"  />
+  <figcaption><strong>Fig. 1</strong>.: Architecture of AUDIOLDM model</figcaption>
+</figure>
 
+This approach allows the model to learn the relationship between text and sound, enabling it to generate audio from text input.
+
+In our experiment, to align with the approach outlined in the AUDIOSR paper, we replaced the text conditioning with a low-resolution audio signal. Additionally, the CLAP encoding for both the high-resolution and low-resolution audio signals was replaced with a VAE encoder. 
 
 
 
 ### 4. PREPROCESSING
 In our study, we first apply a low-pass filter to the audio signal, following the procedure outlined in AUDIOSR. The cutoff frequency for the low-pass filter is randomly selected from a uniform distribution between 2 kHz and 16 kHz. To ensure the robustness and generalization of the filtering process, the type of low-pass filter is also chosen randomly from four different filter designs: Chebyshev, Elliptic, Butterworth, and Boxcar. The order of the filter is selected randomly from an integer range between 2 and 10. This variability in the filter selection is crucial to replicate the diverse conditions observed in the referenced work and to address the filter generalization problem.
 
-After filtering, we introduce noise into the waveform. The noise type is selected randomly between single-tone noise and Gaussian noise. For both noise types, the amplitude is chosen from a uniform distribution within the range of 0.001 to 0.2, and the center frequency is uniformly sampled between 100 Hz and 15 kHz. In the case of Gaussian noise, we further introduce variability by randomly sampling the standard deviation from a uniform distribution between 50 Hz and 800 Hz, ensuring a broad spectrum of noise characteristics.
+After filtering, we added noise to the waveform, randomly selecting between single-tone noise and Gaussian white noise. For both types, the amplitude is sampled from a uniform distribution. The amplitude range for single-tone noise is set between 0.001 and 0.2, while for Gaussian noise it is limited to 0.001 to 0.1, as Gaussian noise affects the entire spectrum of the audio signal. The center frequency for the single-tone noise is uniformly sampled between 100 Hz and 15 kHz.
 
+
+### DATA
+The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
 ### EXPERIMENT
+In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We followed the processes mentioned in the PROBLEM FORMULATION AND METHOD section and in the PREPROESSING section to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.???????? 
+
+
+
+
+
+
+
 
 
 ### RESULT
 
 ### CONCLUSION
+
+### FUTURE WORK
+
 
 ### REFERENCES
 
