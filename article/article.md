@@ -53,12 +53,12 @@ include-before: # contents specified by -B/--include-before-body (may have multi
 include-after: # contents specified by -A/--include-after-body (may have multiple values)
 indent: # if true, pandoc will use document class settings for indentation (the default LaTeX template otherwise removes indentation and adds space between paragraphs)
 linestretch: # adjusts line spacing using the setspace package, e.g. 1.25, 1.5
-lof: true
+#lof: true
 #lot: true
 pagestyle: # control \pagestyle{}: the default article class supports plain (default), empty (no running heads or page numbers), and headings (section titles in running heads)
 papersize: # paper size, e.g. letter, a4
 secnumdepth: # numbering depth for sections (with --number-sections option or numbersections variable)
-toc-depth: 3
+toc-depth: 1
 toc-title: 'Contents'
 
 # Fonts
@@ -81,7 +81,7 @@ description: # document description, included in ODT, docx and pptx metadata. So
 subject: # document subject, included in ODT, PDF, docx, EPUB, and pptx metadata
 ---
 
-### 1. INTRODUCTION
+# 1. Introduction
 
 Audio super-resolution (ASR) is the task of converting low-resolution audio signals to high-resolution, enhancing their fidelity, bandwidth, and perceptual quality. This problem is crucial in various fields, including music production, audio restoration, and telecommunication, where audio data often suffers from bandwidth limitations. As deep learning techniques advance, several generative models have emerged, offering new possibilities for tackling ASR with greater accuracy and scalability.  
 
@@ -91,7 +91,7 @@ The AUDIOSR model builds upon earlier work by Haohe Liu, particularly the AudioL
 In this project, we aimed to recreate the AUDIOSR model and extend its capabilities. Our work introduces several modifications to improve the versatility and performance of the model, including adjustments to the training process, to train on different distortions and noises. This paper presents the details of our implementation, the enhancements we introduced, and a comprehensive evaluation of the model's performance.
 
 
-### 2.	LITERATURE REVIEW
+# 2. Literature Review
 One notable approach in the field of audio enhancement is presented by Mostafa Sadeghi in "Audio-visual Speech Enhancement Using Conditional Variational Auto-Encoders" [????] This study introduces a novel method leveraging Conditional Variational Auto-Encoders (CVAEs) for improving audio quality through the integration of visual information. The method employs a dual VAE architecture, with one VAE dedicated to processing audio and another to analyzing the visual representation of the speaker's lips.
 
 The core innovation of this approach lies in the conditioning of the audio VAE on the visual VAE. By using lip movement data as a conditional input, the model enhances the audio signal more effectively on the additional contextual information provided by the visual data. This approach mirrors the concepts explored in our project on audio super resolution (AudioSR), where high-resolution audio is learned conditionally based on low-resolution audio, with both signals encoded using VAEs. The integration of visual data for audio enhancement highlights the potential of using multi-modal information to improve audio quality.
@@ -100,7 +100,7 @@ Another significant contribution to the field is presented by Huajian Fang in "V
 
 A key aspect of this approach is the use of Kullback-Leibler (KL) divergence to align the latent representations of noisy audio with those of clean audio. By minimizing the divergence between these latent spaces, the model effectively reduces the influence of noise, resulting in enhanced speech quality. This noise-aware encoding technique demonstrates a robust method for improving audio clarity by refining the latent space representations. The concept of aligning noisy and clean latent spaces shares similarities with our exploration of conditional learning in AudioSR, underscoring the relevance of advanced VAE techniques for effective audio enhancement.
 
-### 3. PROBLEM FORMULATION AND METHOD
+# 3. Problem Formulation And Method
 Given an analog signal that has been discretely sampled at a rate of l samples per second, resulting in a low-resolution sequence of values. The goal of audio super resolution (SR) is to estimate a higher resolution signal sampled at a rate of h samples per second, where h > l. According to Nyquist’s theory, the low resolution signal have maximum frequency
 bandwidths of l/2 Hz and the high resolution signal have h/2 Hz. Therefore, the information contained between frequencies of h/2 − l/2 Hz is missing from the low resolution signal. Estimating the “missing” frequency data is the core objective of the SR task.
 
@@ -121,24 +121,24 @@ In our experiment, to match the methodology described in the AUDIOSR paper, we r
 !!!!!!!!!!!! ADD HERE THE MATH AND EXPLANATION!!!!
 
 
-### 4. PREPROCESSING
+# 4. Preprocessing
 In our study, we first apply a low-pass filter to the audio signal, following the procedure outlined in AUDIOSR. The cutoff frequency for the low-pass filter is randomly selected from a uniform distribution between 2 kHz and 16 kHz. To ensure the robustness and generalization of the filtering process, the type of low-pass filter is also chosen randomly from four different filter designs: Chebyshev, Elliptic, Butterworth, and Boxcar. The order of the filter is selected randomly from an integer range between 2 and 10. This variability in the filter selection is crucial to replicate the diverse conditions observed in the referenced work and to address the filter generalization problem.
 
 After filtering, we added noise to the waveform, randomly selecting between single-tone noise and Gaussian white noise. For both types, the amplitude is sampled from a uniform distribution. The amplitude range for single-tone noise is set between 0.001 and 0.2, while for Gaussian noise it is limited to 0.001 to 0.1, as Gaussian noise affects the entire spectrum of the audio signal. The center frequency for the single-tone noise is uniformly sampled between 100 Hz and 15 kHz.
 
 
-### DATA
+# Data
 The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
-### EXPERIMENT
+# Experiment
 In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We followed the processes mentioned in the PROBLEM FORMULATION AND METHOD section and in the PREPROESSING section to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.???????? 
 
-### RESULT
+# Result
 
-### CONCLUSION
+# Conclusion
 
-### FUTURE WORK
+# Future Work
 
 
-### REFERENCES
+# References
 
