@@ -43,8 +43,12 @@ gdown --id 1T6EnuAHIc8ioeZ9kB1OZ_WGgwXAVGOZS --output checkpoints.tar
 # preprocessed AudioCaps (30Gb): (https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=drive_link)
 gdown --id 16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx --output dataset.tar
 
+# download musdb dataset
+wget https://zenodo.org/records/1117372/files/musdb18.zip
 
 # extract them to repo/data
 tar -xf checkpoints.tar -C AudioLDM-training-finetuning/data/ --strip-components=1
 
 tar -xf dataset.tar -C AudioLDM-training-finetuning/data/ --strip-components=1
+
+tar -xf musdb18.zip -C AudioLDM-training-finetuning/data/dataset/ --strip-components=1

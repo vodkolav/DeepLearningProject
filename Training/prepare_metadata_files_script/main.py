@@ -14,8 +14,8 @@ https://zenodo.org/records/1117372/files/musdb18.zip?download=1
 from json_metadata_utils import *
 # Change the root if necessary!! The paths should adjust according to the OS on your computer
 # root_path = Path('MUSDB18/MUSDB18-7')
-root_path = Path('C:/Users/97254/Desktop/MUSDB18/MUSDB18-7')
-
+#root_path = Path('C:/Users/97254/Desktop/MUSDB18/MUSDB18-7')
+root_path = Path("./data/dataset/MUSDB18")
 
 audio_train_dir = root_path / Path('train')
 audio_test_dir = root_path / Path('test')
