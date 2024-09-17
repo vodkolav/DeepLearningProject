@@ -1,29 +1,94 @@
-<div style="display: flex; justify-content: center;">
+---
+abstract: 'In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain. Our code demo is avaliable on Github on this link: PUT LINK????????????????????????????'
+author:
+ - '[Niv Aharon Cohen](mailto:nivcohen1000@gmail.com)'
+ - '[Michael Berger](mailto:michael.berger.e@gmail.com)'
+bibliography: references.bib # bibliography to use for resolving references
+csl: https://www.zotero.org/styles/chicago-note-bibliography
+date: 17 September 2024
+keywords: # list of keywords to be included in HTML, PDF, ODT, pptx, docx and AsciiDoc metadata; repeat as for author, above
+lang: en-US
+nocite: |
+  @brown2016
+references:
+  - id: liu2023audioldm
+    author:
+      - literal: Liu et. al`
+    citation-key: liu2023audioldm
+    title: 'AudioLDM: Text-to-Audio Generation with Latent Diffusion Models'
+    type: article
 
-## AUDIOSR – VAE
-</div>
+subtitle: 'Subtitle'
+title: 'AUDIOSR - VAE'
+toc: true
 
+# LaTeX
+abstract-title: 'Abstract'
+beamerarticle: # produce an article from Beamer slides
+classoption: # option for document class, e.g. oneside (a list).
+documentclass: scrartcl # document class: usually one of the standard classes, article, book, and report; the KOMA-Script equivalents, scrartcl, scrbook, and scrreprt, which default to smaller margins; or memoir
+geometry: # option for geometry package, e.g. margin=1in; repeat for multiple options:
+header-includes: # contents specified by -H/--include-in-header (may have multiple values)
+  - |
+    ```{=latex}
+    \raggedbottom % or \flushbottom
+    ```
+  - |
+    ```{=latex}
+    % keep figures where there are in the text
+    \usepackage{float} 
+    \floatplacement{figure}{H}
+    ```
+  - |
+    ```{=latex}
+    % add custom hyphentation rules
+    \hyphenation
+    {%
+      Hyphenate-me-like-this
+      Dontyoueverhyphenateme
+    }%
+    ```
+hyperrefoptions: # option for hyperref package, e.g. linktoc=all; repeat for multiple options:
+include-before: # contents specified by -B/--include-before-body (may have multiple values)
+include-after: # contents specified by -A/--include-after-body (may have multiple values)
+indent: # if true, pandoc will use document class settings for indentation (the default LaTeX template otherwise removes indentation and adds space between paragraphs)
+linestretch: # adjusts line spacing using the setspace package, e.g. 1.25, 1.5
+lof: true
+#lot: true
+pagestyle: # control \pagestyle{}: the default article class supports plain (default), empty (no running heads or page numbers), and headings (section titles in running heads)
+papersize: # paper size, e.g. letter, a4
+secnumdepth: # numbering depth for sections (with --number-sections option or numbersections variable)
+toc-depth: 3
+toc-title: 'Contents'
 
-Niv Aharon Cohen, Michael Berger
+# Fonts
+fontenc: # allows font encoding to be specified through fontenc package (with pdflatex); default is T1 (see LaTeX font encodings guide)
+fontfamily: # font package for use with pdflatex: TeX Live includes many options, documented in the LaTeX Font Catalogue. The default is Latin Modern.
+fontfamilyoptions: # options for package used as fontfamily; repeat for multiple options.
+fontsize: # font size for body text. The standard classes allow 10pt, 11pt, and 12pt. To use another size, set documentclass to one of the KOMA-Script classes, such as scrartcl or scrbook.
+mainfont:
+sansfont:
+monofont:
+mathfont:
+mainfontoptions:
+sansfontoptions:
+monofontoptions:
+mathfontoptions:
 
+# Word
+category: # document category, included in docx and pptx metadata
+description: # document description, included in ODT, docx and pptx metadata. Some applications show this as Comments metadata.
+subject: # document subject, included in ODT, PDF, docx, EPUB, and pptx metadata
+---
 
+### 1. INTRODUCTION
 
-### ABSTRACT
-
-In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain.
-Our code demo is avaliable on Github on this link:
-PUT LINK????????????????????????????
-
-
-### 1.	INTRODUCTION
-
-Audio super-resolution (ASR) is the task of converting low-resolution audio signals to high-resolution, enhancing their fidelity, bandwidth, and perceptual quality. This problem is crucial in various fields, including music production, audio restoration, and telecommunication, where audio data often suffers from bandwidth limitations. As deep learning techniques advance, several generative models have emerged, offering new possibilities for tackling ASR with greater accuracy and scalability.
+Audio super-resolution (ASR) is the task of converting low-resolution audio signals to high-resolution, enhancing their fidelity, bandwidth, and perceptual quality. This problem is crucial in various fields, including music production, audio restoration, and telecommunication, where audio data often suffers from bandwidth limitations. As deep learning techniques advance, several generative models have emerged, offering new possibilities for tackling ASR with greater accuracy and scalability.  
 
 One such model is AUDIOSR: Versatile Audio Super-Resolution at Scale[????], which leverages a diffusion-based generative framework to reconstruct high-resolution audio from low-resolution inputs.
 The model upscales audio bandwidth from 2 kHz to 16 kHz and generates high-fidelity output with a bandwidth of 24 kHz and a sampling rate of 48 kHz. This approach marks a significant step forward in the domain of ASR by effectively capturing the complex temporal and spectral characteristics of audio signals.
 The AUDIOSR model builds upon earlier work by Haohe Liu, particularly the AudioLDM[???????] framework. AudioLDM was initially designed to convert text to audio by conditioning audio generation on text during the training process. It introduces a novel combination of Variational Autoencoders (VAE), Contrastive Language-Audio Pretraining (CLAP), latent diffusion models, and audio vocoders to synthesize high-quality audio. While AudioLDM focuses on text-conditioned audio generation, AUDIOSR extends these ideas specifically to bandwidth extension and high-resolution audio reconstruction, focusing on the audio domain, but now with audio-conditioning instead of text-conditioning.
 In this project, we aimed to recreate the AUDIOSR model and extend its capabilities. Our work introduces several modifications to improve the versatility and performance of the model, including adjustments to the training process, to train on different distortions and noises. This paper presents the details of our implementation, the enhancements we introduced, and a comprehensive evaluation of the model's performance.
-
 
 
 ### 2.	LITERATURE REVIEW
@@ -44,26 +109,16 @@ As outlined in the introduction, the entire AUDIOSR model builds upon the author
 Each encoded component—both the audio and the conditional text—is then passed through the latent diffusion model, where sampling occurs. Importantly, each part of the architecture is trained separately in a sequential manner. Once processed, the data is passed through the VAE decoder to reconstruct the Mel spectrogram. Finally, this spectrogram is fed into a neural vocoder, which converts the Mel spectrogram back into an audible audio signal.
 
 
-<!-- Figure of original AUDIOLDM -->
-<figure>
-  <img alt="Fig1: " src="images_final_article/audioldm_architecture_original.png"  />
-  <figcaption><strong>Fig. 1</strong>.: Architecture of AUDIOLDM model</figcaption>
-</figure>
+![Architecture of AUDIOLDM model](images_final_article/audioldm_architecture_original.png)
 
 This approach allows the model to learn the relationship between text and sound, enabling it to generate audio from text input.
 
 
 In our experiment, to match the methodology described in the AUDIOSR paper, we replaced the text-based conditioning with a low-resolution audio signal with noise addition . Furthermore, instead of using CLAP encodings for the high- and low-resolution audio signals, we employed a VAE (Variational Autoencoder) encoder. The latent spaces generated by the two VAE encoders for both high- and low-resolution signals were concatenated into a single latent space, which was then used as input to the latent diffusion model.
 
-
-<!-- Figure of original AUDIOLDM -->
-<figure>
-  <img alt="Fig1: " src="images_final_article/audiosr_with_noise_architecture.png"  />
-  <figcaption><strong>Fig. 2</strong>.: Architecture of AUDIOSR model plus noise</figcaption>
-</figure>
+![Architecture of AUDIOSR model plus noise](images_final_article/audiosr_with_noise_architecture.png)
 
 !!!!!!!!!!!! ADD HERE THE MATH AND EXPLANATION!!!!
-
 
 
 ### 4. PREPROCESSING
@@ -77,14 +132,6 @@ The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full
 
 ### EXPERIMENT
 In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We followed the processes mentioned in the PROBLEM FORMULATION AND METHOD section and in the PREPROESSING section to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.???????? 
-
-
-
-
-
-
-
-
 
 ### RESULT
 
