@@ -146,25 +146,59 @@ After filtering, we added noise to the waveform, randomly selecting between sing
 The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
 # 6.Experiment
-In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We used a single NVIDIA   GPU with 24GB VRAM. We followed the processes mentioned in the Problem Formulation And Method section [section 3] and in the Preprocessing section [section 4] to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.2. The model was trained for 19,796 epochs and batch size of 10. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation.
+In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We used a single NVIDIA   GPU with 24GB VRAM. We followed the processes mentioned in the Problem Formulation And Method section [section 3] and in the Preprocessing section [section 4] to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.2. The model was trained for 300 epochs and batch size of 10. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation. It is worth mentioning that before performing the experiment, we did an earlier experiment where we trained the model only with single tone noise for 17,000 epochs.
 
 # 7.Results
-We successfully ran the AUDIOSR model without adding noise and achieved results comparable to those reported by the authors. Upon introducing noise, we found that the model was more effective at cleaning single-tone noise compared to white noise. For both noise types, the model performed better at removing noise at higher frequencies. Additionally, when the audio signal had a lower amplitude, the model was more efficient at distinguishing and separating the signal from the noise.
+We successfully ran the AUDIOSR model without adding noise and achieved results comparable to those reported by the authors. Upon introducing noise, we found that the model was more effective at cleaning single-tone noise compared to white noise. Part of it is because the model trained much longer on single tone noise than on white noise. For both noise types, the model performed better at removing noise at higher frequencies. Additionally, when the audio signal had a lower amplitude, the model was more efficient at distinguishing and separating the signal from the noise.
 
-In order to evaluate the model, we used LSD as metric, as the author used in his article.
-In Fig.[?????] We can se that the LSD of our model moves on average between 1.2 to 2, depending on the type of noise, the amplitude of the noise and the cutoff frequency of the low resolution audio input. 
+Let us see some results from the early training. The order of the spectograms are always: Ground truth on top, distorted audio in the middle and restored audio on the buttom.
+
+![Results of white noise at early stage of the training](images/early_white_noise.png)
+
+
+
+![Results of single tone noise at early stage of the training](images/early_single_tone.png)
+
+We can see that in the early stage of training, the model does not manage to get rid of any type of the noises.
+After training the model for a longer time we can see the results:
+
+
+![Results of single tone noise after training example 1](images/single_tone_late1.jpeg)
+
+![Results of single tone noise after training example 2](images/single_tone_late2.jpeg)
+
+![Results of white noise after training example 1](images/white_noise_late1.jpeg)
+
+![Results of white noise after training example 2](images/white_noise_late3.jpeg)
+
+After training on noisy audio, the model was able to completely eliminate the single-tone noise. In contrast, it only reduced white noise in areas where the audio signal had lower amplitude. As noted in the Experiment section [Section 6], the model was trained significantly longer on single-tone noise than on white noise, making it more effective at handling single-tone noise. With more training time on white noise, the results for white noise reduction could likely have been much improved.
+
+In the next graph we would see the training loss of the model:
+
+![Training loss graph](images/loss_graph.jpeg)
+
+We ran multiple iterations of the training process. The orange trace represents the model training exclusively on single-tone noise, where we observe loss convergence, indicating the model is learning to eliminate the single-tone noise. Following that, the blue, green, and red traces represent runs where the model trained on a random choice between white noise and single-tone noise. When white noise was introduced, the loss immediately spiked to higher values due to the drastic change in input. Additionally, the training on white noise did not converge, likely because there was insufficient time for it to do so.
+
+
+To evaluate the model, we used the LSD (Log-Spectral Distance) metric, as was done in the original article. In Fig. [?????], we can see that the LSD of our model averages between 1.2 and 2, depending on the type of noise, the noise amplitude, and the cutoff frequency of the low-resolution audio input.
+
 ![LSD VS training step](images/lsd_vs_step.jpeg)
 
 comparing to the author results and results of LSD of other articles about audio super resolution:
 
 | Model      |     LSD    | 
 |------------|------------|
-| GT-Mel     |  0.61 | 
-| Unprocessed| 1.99-4.25| 
-| NVSR-DNN | 1.13- 1.67| 
-| NVSR-ResUNet  | 1.7- 0.95| 
-| AUDIOSR  | 0.99- 0.73|
+| GT-Mel     |  0.61      | 
+| Unprocessed| 1.99-4.25  | 
+| NVSR-DNN   | 1.13- 1.67 | 
+| NVSR-ResUNet | 1.7- 0.95| 
+| AUDIOSR    | 0.99- 0.73|
 | AUDIOSR + Noise (our model) | 2 - 1.2| 
+
+Where LSD lower values indicate superior
+performance. As expected, our model performs worse than the original AudioSR because we introduced additional noise to the input, further distorting the signal. However, our results are not far behind NVSR-DNN, NVSR-ResUNet, and AudioSR, suggesting that the model is still effective at predicting higher frequencies and in noise reduction, particularly when the noise amplitude is not too high.
+
+
 
 # 8.Conclusion
 
