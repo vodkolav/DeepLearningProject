@@ -142,18 +142,34 @@ In our study, we first apply a low-pass filter to the audio signal, following th
 After filtering, we added noise to the waveform, randomly selecting between single-tone noise and Gaussian white noise. For both types, the amplitude is sampled from a uniform distribution. The amplitude range for single-tone noise is set between 0.001 and 0.2, while for Gaussian noise it is limited to 0.001 to 0.02, as Gaussian noise affects the entire spectrum of the audio signal. The center frequency for the single-tone noise is uniformly sampled between 100 Hz and 15 kHz.
 
 
-# Data
+# 5.Data
 The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
-# Experiment
-In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. [!!!!!] WHAT MACHINE DID WE USE[!!!!!] We followed the processes mentioned in the PROBLEM FORMULATION AND METHOD section and in the PREPROESSING section to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.[????????]. The model was trained for [!!!!!!!] epochs, batch size of [!!!!!!!]. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation.
+# 6.Experiment
+In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We used a single NVIDIA   GPU with 24GB VRAM. We followed the processes mentioned in the Problem Formulation And Method section [section 3] and in the Preprocessing section [section 4] to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.2. The model was trained for 19,796 epochs and batch size of 10. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation.
 
-# Result
+# 7.Results
+We successfully ran the AUDIOSR model without adding noise and achieved results comparable to those reported by the authors. Upon introducing noise, we found that the model was more effective at cleaning single-tone noise compared to white noise. For both noise types, the model performed better at removing noise at higher frequencies. Additionally, when the audio signal had a lower amplitude, the model was more efficient at distinguishing and separating the signal from the noise.
 
-# Conclusion
+In order to evaluate the model, we used LSD as metric, as the author used in his article.
+In Fig.[?????] We can se that the LSD of our model moves on average between 1.2 to 2, depending on the type of noise, the amplitude of the noise and the cutoff frequency of the low resolution audio input. 
+![LSD VS training step](images/lsd_vs_step.jpeg)
 
-# Future Work
+comparing to the author results and results of LSD of other articles about audio super resolution:
 
+| Model      |     LSD    | 
+|------------|------------|
+| GT-Mel     |  0.61 | 
+| Unprocessed| 1.99-4.25| 
+| NVSR-DNN | 1.13- 1.67| 
+| NVSR-ResUNet  | 1.7- 0.95| 
+| AUDIOSR  | 0.99- 0.73|
+| AUDIOSR + Noise (our model) | 2 - 1.2| 
+
+# 8.Conclusion
+
+# 9.Future Work
+For future work, we plan to continue training the model on Gaussian noise to evaluate whether it can achieve better results in noise reduction. Additionally, we aim to explore audio inpainting, an experiment we were unable to conduct, where parts of the audio signal are removed, and the model attempts to reconstruct the missing portions. This could further enhance the model’s ability to handle more complex audio restoration tasks.
 
 # References
 
