@@ -1,5 +1,5 @@
 ---
-abstract: 'In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain. Our code demo is avaliable on Github on this link: [https://github.com/vodkolav/DeepLearningProject](https://github.com/vodkolav/DeepLearningProject)'
+abstract: 'In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain. Our demo is avaliable on Github on this link: [https://github.com/vodkolav/DeepLearningProject](https://github.com/vodkolav/DeepLearningProject) and the training code is available at: [https://github.com/vodkolav/AudioLDM-training-finetuning](https://github.com/vodkolav/AudioLDM-training-finetuning/tree/SR_training)'
 author:
  - '[Niv Aharon Cohen](mailto:nivcohen1000@gmail.com)'
  - '[Michael Berger](mailto:michael.berger.e@gmail.com)'
@@ -12,15 +12,14 @@ nocite: |
   @brown2016
 references:
   - id: liu2023audioldm
-    author:
-      - literal: Liu et. al`
+    author: Liu et. al`
     citation-key: liu2023audioldm
     title: 'AudioLDM: Text-to-Audio Generation with Latent Diffusion Models'
     type: article
 
   - id: liu2023audiosr
     title: AudioSR Versatile Audio Super-resolution at Scale
-    author: Liu et. al`
+    author: Liu et. al
     year: '2023'
     type: article
 
@@ -39,7 +38,7 @@ references:
     title: The MUSDB18 corpus for music separation,
     type: misc
 
-subtitle: 'Subtitle'
+subtitle: 'Audio super resolution with Latent diffusion models and VAE'
 title: 'AUDIOSR - VAE'
 toc: true
 
@@ -151,7 +150,7 @@ $G(z_k, k, \mathcal{F}_{\text{enc}}(X_l)$ is the model's prediction, which depen
 
 The velocity $v_k$ is calculated using the following formula:
 
-$v_t = \sqrt{\bar{\alpha}_t} \epsilon - \sqrt{1 - \bar{\alpha}_t} x_0$
+$$v_t = \sqrt{\bar{\alpha}_t} \epsilon - \sqrt{1 - \bar{\alpha}_t} x_0$$
 
 This formula represents a weighted mixture of the noise component $\epsilon$ and the original signal $x_0$. Where ${\bar{\alpha}_t}$ is part of the noise schedule, which determines how much noise is added at each step.
 Thus, the model's goal is to learn to predict the velocity term by minimizing the difference between the true velocity $v_k$ and the model's predicted velocity, using the latent diffusion model $G$. This is done by minimizing the Euclidean distance between the two terms.
@@ -163,13 +162,13 @@ In our study, we first apply a low-pass filter to the audio signal, following th
 After filtering, we added noise to the waveform, randomly selecting between single-tone noise and Gaussian white noise. For both types, the amplitude is sampled from a uniform distribution. The amplitude range for single-tone noise is set between 0.001 and 0.2, while for Gaussian noise it is limited to 0.001 to 0.02, as Gaussian noise affects the entire spectrum of the audio signal. The center frequency for the single-tone noise is uniformly sampled between 100 Hz and 15 kHz.
 
 
-# 5.Data
+# 5. Data
 The dataset used in this paper is MUSDB18 [@musdb18]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
-# 6.Experiment
+# 6. Experiment
 In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We used a single NVIDIA   GPU with 24GB VRAM. We followed the processes mentioned in the Problem Formulation And Method section [section 3] and in the Preprocessing section [section 4] to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.2. The model was trained for 300 epochs and batch size of 10. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation. It is worth mentioning that before performing the experiment, we did an earlier experiment where we trained the model only with single tone noise for 17,000 epochs.
 
-# 7.Results
+# 7. Results
 We successfully ran the AUDIOSR model without adding noise and achieved results comparable to those reported by the authors. Upon introducing noise, we found that the model was more effective at cleaning single-tone noise compared to white noise. Part of it is because the model trained much longer on single tone noise than on white noise. For both noise types, the model performed better at removing noise at higher frequencies. Additionally, when the audio signal had a lower amplitude, the model was more efficient at distinguishing and separating the signal from the noise.
 
 Let us see some results from the early training. The order of the spectograms are always: Ground truth on top, distorted audio in the middle and restored audio on the buttom.
@@ -201,7 +200,7 @@ In the next graph we would see the training loss of the model:
 We ran multiple iterations of the training process. The orange trace represents the model training exclusively on single-tone noise, where we observe loss convergence, indicating the model is learning to eliminate the single-tone noise. Following that, the blue, green, and red traces represent runs where the model trained on a random choice between white noise and single-tone noise. When white noise was introduced, the loss immediately spiked to higher values due to the drastic change in input. Additionally, the training on white noise did not converge, likely because there was insufficient time for it to do so.
 
 
-To evaluate the model, we used the LSD (Log-Spectral Distance) metric, as was done in the original article. In Fig. [?????], we can see that the LSD of our model averages between 1.2 and 2, depending on the type of noise, the noise amplitude, and the cutoff frequency of the low-resolution audio input.
+To evaluate the model, we used the LSD (Log-Spectral Distance) metric, as was done in the original article. In Fig. [10] we can see that the LSD of our model averages between 1.2 and 2, depending on the type of noise, the noise amplitude, and the cutoff frequency of the low-resolution audio input.
 
 ![LSD VS training step](images/lsd_vs_step.jpeg)
 
