@@ -1,5 +1,5 @@
 ---
-abstract: 'In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain. Our code demo is avaliable on Github on this link: PUT LINK????????????????????????????'
+abstract: 'In this project, we explored audio super-resolution by recreating and enhancing the model proposed in AUDIOSR: Versatile Audio Super-Resolution at Scale. Audio super-resolution aims to reconstruct high-resolution audio from lower-resolution inputs, with applications in areas such as music restoration, audio compression, and telecommunication. The AUDIOSR model employs a diffusion-based generative approach to upscale audio bandwidth from 2 kHz to 16 kHz, generating high-resolution audio output at 24 kHz bandwidth with a 48 kHz sampling rate. Our work involved replicating the AUDIOSR architecture and training process, while introducing some modifications to further improve performance and versatility. We extended the model by integrating additional features to filter different noises and distortions. The performance of both the original and modified models was evaluated on standard datasets, demonstrating competitive results in terms of audio quality and bandwidth restoration. Our findings provide insights into the adaptability of diffusion models in audio super-resolution and open avenues for further research in this domain. Our code demo is avaliable on Github on this link: [https://github.com/vodkolav/DeepLearningProject](https://github.com/vodkolav/DeepLearningProject)'
 author:
  - '[Niv Aharon Cohen](mailto:nivcohen1000@gmail.com)'
  - '[Michael Berger](mailto:michael.berger.e@gmail.com)'
@@ -17,6 +17,27 @@ references:
     citation-key: liu2023audioldm
     title: 'AudioLDM: Text-to-Audio Generation with Latent Diffusion Models'
     type: article
+
+  - id: liu2023audiosr
+    title: AudioSR Versatile Audio Super-resolution at Scale
+    author: Liu et. al`
+    year: '2023'
+    type: article
+
+  - id: Sadeghi2019CVAE
+    author:  Mostafa Sadeghi et al'
+    title: Audio-visual Speech Enhancement Using Conditional Variational Auto-Encoder
+    type: article
+
+  - id: Fang2021VAE
+    author:  Fang, Huajian et al'
+    title: Variational Autoencoder for Speech Enhancement with a Noise-Aware Encoder
+    type: article
+
+  - id: musdb18
+    author:  Rafii et al'
+    title: The MUSDB18 corpus for music separation,
+    type: misc
 
 subtitle: 'Subtitle'
 title: 'AUDIOSR - VAE'
@@ -85,18 +106,18 @@ subject: # document subject, included in ODT, PDF, docx, EPUB, and pptx metadata
 
 Audio super-resolution (ASR) is the task of converting low-resolution audio signals to high-resolution, enhancing their fidelity, bandwidth, and perceptual quality. This problem is crucial in various fields, including music production, audio restoration, and telecommunication, where audio data often suffers from bandwidth limitations. As deep learning techniques advance, several generative models have emerged, offering new possibilities for tackling ASR with greater accuracy and scalability.  
 
-One such model is AUDIOSR: Versatile Audio Super-Resolution at Scale[????], which leverages a diffusion-based generative framework to reconstruct high-resolution audio from low-resolution inputs.
+One such model is AUDIOSR: Versatile Audio Super-Resolution at Scale[@liu2023audiosr], which leverages a diffusion-based generative framework to reconstruct high-resolution audio from low-resolution inputs.
 The model upscales audio bandwidth from 2 kHz to 16 kHz and generates high-fidelity output with a bandwidth of 24 kHz and a sampling rate of 48 kHz. This approach marks a significant step forward in the domain of ASR by effectively capturing the complex temporal and spectral characteristics of audio signals.
 The AUDIOSR model builds upon earlier work by Haohe Liu, particularly the AudioLDM[@liu2023audioldm] framework. AudioLDM was initially designed to convert text to audio by conditioning audio generation on text during the training process. It introduces a novel combination of Variational Autoencoders (VAE), Contrastive Language-Audio Pretraining (CLAP), latent diffusion models, and audio vocoders to synthesize high-quality audio. While AudioLDM focuses on text-conditioned audio generation, AUDIOSR extends these ideas specifically to bandwidth extension and high-resolution audio reconstruction, focusing on the audio domain, but now with audio-conditioning instead of text-conditioning.
 In this project, we aimed to recreate the AUDIOSR model and extend its capabilities. Our work introduces several modifications to improve the versatility and performance of the model, including adjustments to the training process, to train on different distortions and noises. This paper presents the details of our implementation, the enhancements we introduced, and a comprehensive evaluation of the model's performance.
 
 
 # 2. Literature Review
-One notable approach in the field of audio enhancement is presented by Mostafa Sadeghi in "Audio-visual Speech Enhancement Using Conditional Variational Auto-Encoders" [????] This study introduces a novel method leveraging Conditional Variational Auto-Encoders (CVAEs) for improving audio quality through the integration of visual information. The method employs a dual VAE architecture, with one VAE dedicated to processing audio and another to analyzing the visual representation of the speaker's lips.
+One notable approach in the field of audio enhancement is presented by Mostafa Sadeghi in "Audio-visual Speech Enhancement Using Conditional Variational Auto-Encoders" [@Sadeghi2019CVAE] This study introduces a novel method leveraging Conditional Variational Auto-Encoders (CVAEs) for improving audio quality through the integration of visual information. The method employs a dual VAE architecture, with one VAE dedicated to processing audio and another to analyzing the visual representation of the speaker's lips.
 
 The core innovation of this approach lies in the conditioning of the audio VAE on the visual VAE. By using lip movement data as a conditional input, the model enhances the audio signal more effectively on the additional contextual information provided by the visual data. This approach mirrors the concepts explored in our project on audio super resolution (AudioSR), where high-resolution audio is learned conditionally based on low-resolution audio, with both signals encoded using VAEs. The integration of visual data for audio enhancement highlights the potential of using multi-modal information to improve audio quality.
 
-Another significant contribution to the field is presented by Huajian Fang in "Variational Autoencoder for Speech Enhancement with a Noise-Aware Encoder" [??????]. This study addresses the challenge of noise reduction in speech enhancement through a sophisticated VAE-based approach. Fang’s method involves training two distinct VAEs: one for clean audio and another for noisy audio. The purpose of this dual VAE system is to encode both clean and noisy audio into separate latent spaces.
+Another significant contribution to the field is presented by Huajian Fang in "Variational Autoencoder for Speech Enhancement with a Noise-Aware Encoder" [@Fang2021VAE]. This study addresses the challenge of noise reduction in speech enhancement through a sophisticated VAE-based approach. Fang’s method involves training two distinct VAEs: one for clean audio and another for noisy audio. The purpose of this dual VAE system is to encode both clean and noisy audio into separate latent spaces.
 
 A key aspect of this approach is the use of Kullback-Leibler (KL) divergence to align the latent representations of noisy audio with those of clean audio. By minimizing the divergence between these latent spaces, the model effectively reduces the influence of noise, resulting in enhanced speech quality. This noise-aware encoding technique demonstrates a robust method for improving audio clarity by refining the latent space representations. The concept of aligning noisy and clean latent spaces shares similarities with our exploration of conditional learning in AudioSR, underscoring the relevance of advanced VAE techniques for effective audio enhancement.
 
@@ -143,7 +164,7 @@ After filtering, we added noise to the waveform, randomly selecting between sing
 
 
 # 5.Data
-The dataset used in this paper is MUSDB18 [??????]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
+The dataset used in this paper is MUSDB18 [@musdb18]. MUSDB18 consists of 150 full-length music tracks, totaling approximately 10 hours of audio, with a dataset size of 4.4 GB. It is widely regarded as a benchmark for music source separation tasks. The dataset includes a collection of professionally produced songs spanning various genres, such as rock, pop, jazz, and electronic music. Each track is provided as a multitrack audio file, where the individual musical components are separated into distinct "stems," including vocals, drums, bass, and other instruments. One of these stems contains the mixture of all components, which we used for training purposes in this work.
 
 # 6.Experiment
 In our experiment we divided the dataset as follow: 90 tracks were used for the training, 10 for validation and 50 tracks for the test. We used a single NVIDIA   GPU with 24GB VRAM. We followed the processes mentioned in the Problem Formulation And Method section [section 3] and in the Preprocessing section [section 4] to create the AUDIOSR architecture using the AUDIOLDM architecture with the additional noise components to the conditional part as demonstrated in Fig.2. The model was trained for 19,796 epochs and batch size of 10. We used the author's provided checkpoints to resume training from where they left off, aiming to enhance the model and add new features like noise and distortion cancellation.
