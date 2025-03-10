@@ -36,6 +36,16 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -53,6 +63,39 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \ifLuaTeX
 \usepackage[bidi=basic]{babel}
 \else
@@ -92,7 +135,7 @@
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{Subtitle}
+\subtitle{Audio super resolution with Latent diffusion models and VAE}
 \author{\href{mailto:nivcohen1000@gmail.com}{Niv Aharon
 Cohen} \and \href{mailto:michael.berger.e@gmail.com}{Michael Berger}}
 \date{17 September 2024}
@@ -117,8 +160,10 @@ was evaluated on standard datasets, demonstrating competitive results in
 terms of audio quality and bandwidth restoration. Our findings provide
 insights into the adaptability of diffusion models in audio
 super-resolution and open avenues for further research in this domain.
-Our code demo is avaliable on Github on this link: PUT
-LINK????????????????????????????
+Our demo is avaliable on Github on this link:
+\url{https://github.com/vodkolav/DeepLearningProject} and the training
+code is available at:
+\href{https://github.com/vodkolav/AudioLDM-training-finetuning/tree/SR_training}{https://github.com/vodkolav/AudioLDM-training-finetuning}
 \end{abstract}
 
 
@@ -128,7 +173,6 @@ LINK????????????????????????????
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\listoffigures
 \section{1. Introduction}\label{introduction}
 
 Audio super-resolution (ASR) is the task of converting low-resolution
@@ -141,21 +185,23 @@ offering new possibilities for tackling ASR with greater accuracy and
 scalability.
 
 One such model is AUDIOSR: Versatile Audio Super-Resolution at
-Scale{[}????{]}, which leverages a diffusion-based generative framework
+Scale\footnote{Liu et. al, {``AudioSR Versatile Audio Super-Resolution
+  at Scale.''}}, which leverages a diffusion-based generative framework
 to reconstruct high-resolution audio from low-resolution inputs. The
 model upscales audio bandwidth from 2 kHz to 16 kHz and generates
 high-fidelity output with a bandwidth of 24 kHz and a sampling rate of
 48 kHz. This approach marks a significant step forward in the domain of
 ASR by effectively capturing the complex temporal and spectral
 characteristics of audio signals. The AUDIOSR model builds upon earlier
-work by Haohe Liu, particularly the AudioLDM{[}???????{]} framework.
-AudioLDM was initially designed to convert text to audio by conditioning
-audio generation on text during the training process. It introduces a
-novel combination of Variational Autoencoders (VAE), Contrastive
-Language-Audio Pretraining (CLAP), latent diffusion models, and audio
-vocoders to synthesize high-quality audio. While AudioLDM focuses on
-text-conditioned audio generation, AUDIOSR extends these ideas
-specifically to bandwidth extension and high-resolution audio
+work by Haohe Liu, particularly the AudioLDM\footnote{Liu et. al`,
+  {``AudioLDM: Text-to-Audio Generation with Latent Diffusion Models.''}}
+framework. AudioLDM was initially designed to convert text to audio by
+conditioning audio generation on text during the training process. It
+introduces a novel combination of Variational Autoencoders (VAE),
+Contrastive Language-Audio Pretraining (CLAP), latent diffusion models,
+and audio vocoders to synthesize high-quality audio. While AudioLDM
+focuses on text-conditioned audio generation, AUDIOSR extends these
+ideas specifically to bandwidth extension and high-resolution audio
 reconstruction, focusing on the audio domain, but now with
 audio-conditioning instead of text-conditioning. In this project, we
 aimed to recreate the AUDIOSR model and extend its capabilities. Our
@@ -169,12 +215,14 @@ comprehensive evaluation of the model's performance.
 
 One notable approach in the field of audio enhancement is presented by
 Mostafa Sadeghi in ``Audio-visual Speech Enhancement Using Conditional
-Variational Auto-Encoders'' {[}????{]} This study introduces a novel
-method leveraging Conditional Variational Auto-Encoders (CVAEs) for
-improving audio quality through the integration of visual information.
-The method employs a dual VAE architecture, with one VAE dedicated to
-processing audio and another to analyzing the visual representation of
-the speaker's lips.
+Variational Auto-Encoders''\footnote{Mostafa Sadeghi et al',
+  {``Audio-Visual Speech Enhancement Using Conditional Variational
+  Auto-Encoder.''}} This study introduces a novel method leveraging
+Conditional Variational Auto-Encoders (CVAEs) for improving audio
+quality through the integration of visual information. The method
+employs a dual VAE architecture, with one VAE dedicated to processing
+audio and another to analyzing the visual representation of the
+speaker's lips.
 
 The core innovation of this approach lies in the conditioning of the
 audio VAE on the visual VAE. By using lip movement data as a conditional
@@ -189,12 +237,13 @@ audio quality.
 
 Another significant contribution to the field is presented by Huajian
 Fang in ``Variational Autoencoder for Speech Enhancement with a
-Noise-Aware Encoder'' {[}??????{]}. This study addresses the challenge
-of noise reduction in speech enhancement through a sophisticated
-VAE-based approach. Fang's method involves training two distinct VAEs:
-one for clean audio and another for noisy audio. The purpose of this
-dual VAE system is to encode both clean and noisy audio into separate
-latent spaces.
+Noise-Aware Encoder.''\footnote{Fang, Huajian et al', {``Variational
+  Autoencoder for Speech Enhancement with a Noise-Aware Encoder.''}}
+This study addresses the challenge of noise reduction in speech
+enhancement through a sophisticated VAE-based approach. Fang's method
+involves training two distinct VAEs: one for clean audio and another for
+noisy audio. The purpose of this dual VAE system is to encode both clean
+and noisy audio into separate latent spaces.
 
 A key aspect of this approach is the use of Kullback-Leibler (KL)
 divergence to align the latent representations of noisy audio with those
@@ -210,14 +259,14 @@ techniques for effective audio enhancement.
 \section{3. Problem Formulation And
 Method}\label{problem-formulation-and-method}
 
-Given an analog signal that has been discretely sampled at a rate of l
-samples per second, resulting in a low-resolution sequence of values.
-The goal of audio super resolution (SR) is to estimate a higher
-resolution signal sampled at a rate of h samples per second, where h
-\textgreater{} l. According to Nyquist's theory, the low resolution
-signal have maximum frequency bandwidths of l/2 Hz and the high
-resolution signal have h/2 Hz. Therefore, the information contained
-between frequencies of h/2 − l/2 Hz is missing from the low resolution
+Given an analog signal that has been discretely sampled at a rate of
+\(l\) samples per second, resulting in a low-resolution sequence of
+values. The goal of audio super resolution (SR) is to estimate a higher
+resolution signal sampled at a rate of \(h\) samples per second, where
+\(h > l\). According to Nyquist's theory, the low resolution signal have
+maximum frequency bandwidths of \(l/2 Hz\) and the high resolution
+signal have \(h/2 Hz\). Therefore, the information contained between
+frequencies of \(h/2 − l/2 Hz\) is missing from the low resolution
 signal. Estimating the ``missing'' frequency data is the core objective
 of the SR task.
 
@@ -263,7 +312,37 @@ the latent diffusion model.
 \caption{Architecture of AUDIOSR model plus noise}
 \end{figure}
 
-!!!!!!!!!!!! ADD HERE THE MATH AND EXPLANATION!!!!
+The loss function presented in the AudioSR paper aims to minimize the
+difference between the predicted velocity \(v_k\) at a given diffusion
+step \(k\) and the actual velocity derived from a combination of the
+noise schedule and the true signal \(x_0\).
+
+The general form of the loss function is:
+\[\arg\min_{G_\theta} \|v_k - G(z_k, k, \mathcal{F}_{\text{enc}}(X_l); \theta)\|_2^2\]
+
+\(v_k\) represents the velocity term at the diffusion step \(𝑘\) which
+is computed based on both the current estimate of the noise and the
+original latent representation \(z_0\). \(z_k\) is the latent variable
+at step \(𝑘\) generated by the VAE encoder of the original high
+resolution audio signal. \(G(z_k, k, \mathcal{F}_{\text{enc}}(X_l)\) is
+the model's prediction, which depends on the latent diffusion model (a
+U-Net structure), the latent variable \(z_k\), and the encoder
+\(\mathcal{F}_{\text{enc}}(X_l)\) which transforms the low-resolution
+spectrogram \(X_l\) into a latent space representation. The input to
+\(G\) is obtained by concatenating the two latent sapces created by the
+VAE encoders \(z_k\) and \(\mathcal{F}_{\text{enc}}(X_l)\).
+
+The velocity \(v_k\) is calculated using the following formula:
+
+\[v_t = \sqrt{\bar{\alpha}_t} \epsilon - \sqrt{1 - \bar{\alpha}_t} x_0\]
+
+This formula represents a weighted mixture of the noise component
+\(\epsilon\) and the original signal \(x_0\). Where \({\bar{\alpha}_t}\)
+is part of the noise schedule, which determines how much noise is added
+at each step. Thus, the model's goal is to learn to predict the velocity
+term by minimizing the difference between the true velocity \(v_k\) and
+the model's predicted velocity, using the latent diffusion model \(G\).
+This is done by minimizing the Euclidean distance between the two terms.
 
 \section{4. Preprocessing}\label{preprocessing}
 
@@ -282,39 +361,206 @@ After filtering, we added noise to the waveform, randomly selecting
 between single-tone noise and Gaussian white noise. For both types, the
 amplitude is sampled from a uniform distribution. The amplitude range
 for single-tone noise is set between 0.001 and 0.2, while for Gaussian
-noise it is limited to 0.001 to 0.1, as Gaussian noise affects the
+noise it is limited to 0.001 to 0.02, as Gaussian noise affects the
 entire spectrum of the audio signal. The center frequency for the
 single-tone noise is uniformly sampled between 100 Hz and 15 kHz.
 
-\section{Data}\label{data}
+\section{5. Data}\label{data}
 
-The dataset used in this paper is MUSDB18 {[}??????{]}. MUSDB18 consists
-of 150 full-length music tracks, totaling approximately 10 hours of
-audio, with a dataset size of 4.4 GB. It is widely regarded as a
-benchmark for music source separation tasks. The dataset includes a
-collection of professionally produced songs spanning various genres,
-such as rock, pop, jazz, and electronic music. Each track is provided as
-a multitrack audio file, where the individual musical components are
-separated into distinct ``stems,'' including vocals, drums, bass, and
-other instruments. One of these stems contains the mixture of all
-components, which we used for training purposes in this work.
+The dataset used in this paper is MUSDB18.\footnote{Rafii et al', {``The
+  MUSDB18 Corpus for Music Separation,''}} MUSDB18 consists of 150
+full-length music tracks, totaling approximately 10 hours of audio, with
+a dataset size of 4.4 GB. It is widely regarded as a benchmark for music
+source separation tasks. The dataset includes a collection of
+professionally produced songs spanning various genres, such as rock,
+pop, jazz, and electronic music. Each track is provided as a multitrack
+audio file, where the individual musical components are separated into
+distinct ``stems,'' including vocals, drums, bass, and other
+instruments. One of these stems contains the mixture of all components,
+which we used for training purposes in this work.
 
-\section{Experiment}\label{experiment}
+\section{6. Experiment}\label{experiment}
 
 In our experiment we divided the dataset as follow: 90 tracks were used
-for the training, 10 for validation and 50 tracks for the test. We
-followed the processes mentioned in the PROBLEM FORMULATION AND METHOD
-section and in the PREPROESSING section to create the AUDIOSR
-architecture using the AUDIOLDM architecture with the additional noise
-components to the conditional part as demonstrated in Fig.????????
+for the training, 10 for validation and 50 tracks for the test. We used
+a single NVIDIA GPU with 24GB VRAM. We followed the processes mentioned
+in the Problem Formulation And Method section {[}section 3{]} and in the
+Preprocessing section {[}section 4{]} to create the AUDIOSR architecture
+using the AUDIOLDM architecture with the additional noise components to
+the conditional part as demonstrated in Fig.2. The model was trained for
+300 epochs and batch size of 10. We used the author's provided
+checkpoints to resume training from where they left off, aiming to
+enhance the model and add new features like noise and distortion
+cancellation. It is worth mentioning that before performing the
+experiment, we did an earlier experiment where we trained the model only
+with single tone noise for 17,000 epochs.
 
-\section{Result}\label{result}
+\section{7. Results}\label{results}
 
-\section{Conclusion}\label{conclusion}
+We successfully ran the AUDIOSR model without adding noise and achieved
+results comparable to those reported by the authors. Upon introducing
+noise, we found that the model was more effective at cleaning
+single-tone noise compared to white noise. Part of it is because the
+model trained much longer on single tone noise than on white noise. For
+both noise types, the model performed better at removing noise at higher
+frequencies. Additionally, when the audio signal had a lower amplitude,
+the model was more efficient at distinguishing and separating the signal
+from the noise.
 
-\section{Future Work}\label{future-work}
+Let us see some results from the early training. The order of the
+spectograms are always: Ground truth on top, distorted audio in the
+middle and restored audio on the buttom.
+
+\begin{figure}
+\centering
+\includegraphics{images/early_white_noise.png}
+\caption{Results of white noise at early stage of the training}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{images/early_single_tone.png}
+\caption{Results of single tone noise at early stage of the training}
+\end{figure}
+
+We can see that in the early stage of training, the model does not
+manage to get rid of any type of the noises. After training the model
+for a longer time we can see the results:
+
+\begin{figure}
+\centering
+\includegraphics{images/single_tone_late1.jpeg}
+\caption{Results of single tone noise after training example 1}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{images/single_tone_late2.jpeg}
+\caption{Results of single tone noise after training example 2}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{images/white_noise_late1.jpeg}
+\caption{Results of white noise after training example 1}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{images/white_noise_late3.jpeg}
+\caption{Results of white noise after training example 2}
+\end{figure}
+
+After training on noisy audio, the model was able to completely
+eliminate the single-tone noise. In contrast, it only reduced white
+noise in areas where the audio signal had lower amplitude. As noted in
+the Experiment section {[}Section 6{]}, the model was trained
+significantly longer on single-tone noise than on white noise, making it
+more effective at handling single-tone noise. With more training time on
+white noise, the results for white noise reduction could likely have
+been much improved.
+
+In the next graph we would see the training loss of the model:
+
+\begin{figure}
+\centering
+\includegraphics{images/loss_graph.jpeg}
+\caption{Training loss graph}
+\end{figure}
+
+We ran multiple iterations of the training process. The orange trace
+represents the model training exclusively on single-tone noise, where we
+observe loss convergence, indicating the model is learning to eliminate
+the single-tone noise. Following that, the blue, green, and red traces
+represent runs where the model trained on a random choice between white
+noise and single-tone noise. When white noise was introduced, the loss
+immediately spiked to higher values due to the drastic change in input.
+Additionally, the training on white noise did not converge, likely
+because there was insufficient time for it to do so.
+
+To evaluate the model, we used the LSD (Log-Spectral Distance) metric,
+as was done in the original article. In Fig. {[}10{]} we can see that
+the LSD of our model averages between 1.2 and 2, depending on the type
+of noise, the noise amplitude, and the cutoff frequency of the
+low-resolution audio input.
+
+\begin{figure}
+\centering
+\includegraphics{images/lsd_vs_step.jpeg}
+\caption{LSD VS training step}
+\end{figure}
+
+comparing to the author results and results of LSD of other articles
+about audio super resolution:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Model & LSD \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GT-Mel & 0.61 \\
+Unprocessed & 1.99-4.25 \\
+NVSR-DNN & 1.13- 1.67 \\
+NVSR-ResUNet & 1.7- 0.95 \\
+AUDIOSR & 0.99- 0.73 \\
+AUDIOSR + Noise (our model) & 2 - 1.2 \\
+\end{longtable}
+
+Where LSD lower values indicate superior performance. As expected, our
+model performs worse than the original AudioSR because we introduced
+additional noise to the input, further distorting the signal. However,
+our results are not far behind NVSR-DNN, NVSR-ResUNet, and AudioSR,
+suggesting that the model is still effective at predicting higher
+frequencies and in noise reduction, particularly when the noise
+amplitude is not too high.
+
+\section{8.Conclusion}\label{conclusion}
+
+The model demonstrated positive results in noise removal, even with
+low-resolution audio. It was more effective at reducing single-tone
+noise than white noise, likely due to longer training on the former. The
+model is versatile, and with minor adjustments, it can be adapted to
+handle additional features and different types of noise. Throughout this
+project, we gained valuable insights not only into Variational
+Autoencoders, our main focus, but also into Diffusion models, model
+configurations, and training large-scale models.
+
+\section{9.Future Work}\label{future-work}
+
+For future work, we plan to continue training the model on Gaussian
+noise to evaluate whether it can achieve better results in noise
+reduction. Additionally, we aim to explore audio inpainting, an
+experiment we were unable to conduct, where parts of the audio signal
+are removed, and the model attempts to reconstruct the missing portions.
+This could further enhance the model's ability to handle more complex
+audio restoration tasks.
 
 \section{References}\label{references}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-Fang2021VAE}
+Fang, Huajian et al'. {``Variational Autoencoder for Speech Enhancement
+with a Noise-Aware Encoder,''} n.d.
+
+\bibitem[\citeproctext]{ref-liu2023audiosr}
+Liu et. al. {``AudioSR Versatile Audio Super-Resolution at Scale,''}
+n.d.
+
+\bibitem[\citeproctext]{ref-liu2023audioldm}
+Liu et. al`. {``AudioLDM: Text-to-Audio Generation with Latent Diffusion
+Models,''} n.d.
+
+\bibitem[\citeproctext]{ref-Sadeghi2019CVAE}
+Mostafa Sadeghi et al'. {``Audio-Visual Speech Enhancement Using
+Conditional Variational Auto-Encoder,''} n.d.
+
+\bibitem[\citeproctext]{ref-musdb18}
+Rafii et al'. {``The MUSDB18 Corpus for Music Separation,''} n.d.
+
+\end{CSLReferences}
 
 
 
